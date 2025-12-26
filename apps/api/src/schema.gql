@@ -1,0 +1,41 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Author {
+  bio: String
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  name: String!
+  posts: [Post!]
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Post {
+  author: Author!
+  authorId: Int!
+  content: String!
+  createdAt: DateTime!
+  id: Int!
+  published: Boolean!
+  tags: [Tag!]
+  title: String!
+  updatedAt: DateTime!
+}
+
+type Query {
+  post(id: Int!): Post
+  posts: [Post!]!
+}
+
+type Tag {
+  id: Int!
+  name: String!
+  posts: [Post!]
+}
