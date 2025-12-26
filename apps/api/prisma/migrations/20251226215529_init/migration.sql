@@ -1,6 +1,9 @@
+-- Enable required extension for UUID generation
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 -- CreateTable
 CREATE TABLE "Author" (
-    "id" SERIAL NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "bio" TEXT,
@@ -12,11 +15,11 @@ CREATE TABLE "Author" (
 
 -- CreateTable
 CREATE TABLE "Post" (
-    "id" SERIAL NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "title" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "published" BOOLEAN NOT NULL DEFAULT false,
-    "authorId" INTEGER NOT NULL,
+    "authorId" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -25,7 +28,7 @@ CREATE TABLE "Post" (
 
 -- CreateTable
 CREATE TABLE "Tag" (
-    "id" SERIAL NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" TEXT NOT NULL,
 
     CONSTRAINT "Tag_pkey" PRIMARY KEY ("id")
@@ -33,8 +36,8 @@ CREATE TABLE "Tag" (
 
 -- CreateTable
 CREATE TABLE "_PostToTag" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL,
+    "A" UUID NOT NULL,
+    "B" UUID NOT NULL,
 
     CONSTRAINT "_PostToTag_AB_pkey" PRIMARY KEY ("A","B")
 );

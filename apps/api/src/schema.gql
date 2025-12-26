@@ -25,7 +25,7 @@ scalar DateTime
 type Post {
   _count: PostCount!
   author: Author!
-  authorId: Int!
+  authorId: String!
   content: String!
   createdAt: DateTime!
   id: ID!
@@ -40,7 +40,7 @@ type PostCount {
 }
 
 type Query {
-  post(id: Int!): Post
+  post(id: ID!): Post
   posts: [Post!]!
 }
 

@@ -17,7 +17,7 @@ datasource db {
 }
 
 model Author {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid()) @db.Uuid
   name      String
   email     String   @unique
   bio       String?
@@ -27,11 +27,11 @@ model Author {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid()) @db.Uuid
   title     String
   content   String
   published Boolean  @default(false)
-  authorId  Int
+  authorId  String   @db.Uuid
   author    Author   @relation(fields: [authorId], references: [id])
   tags      Tag[]
   createdAt DateTime @default(now())
@@ -41,7 +41,7 @@ model Post {
 }
 
 model Tag {
-  id    Int    @id @default(autoincrement())
+  id    String @id @default(uuid()) @db.Uuid
   name  String @unique
   posts Post[]
 }
