@@ -17,7 +17,7 @@ export default defineConfig({
     pool: "forks",
     poolOptions: {
       forks: {
-        singleFork: false,
+        singleFork: false, // Disabled as quick solution for avoiding issues with e2e tests^
       },
     },
   },
