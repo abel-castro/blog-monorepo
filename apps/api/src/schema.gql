@@ -1,0 +1,56 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Author {
+  _count: AuthorCount!
+  bio: String
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  name: String!
+  posts: [Post!]
+  updatedAt: DateTime!
+}
+
+type AuthorCount {
+  posts: Int!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Post {
+  _count: PostCount!
+  author: Author!
+  authorId: String!
+  content: String!
+  createdAt: DateTime!
+  id: ID!
+  published: Boolean!
+  tags: [Tag!]
+  title: String!
+  updatedAt: DateTime!
+}
+
+type PostCount {
+  tags: Int!
+}
+
+type Query {
+  post(id: ID!): Post
+  posts: [Post!]!
+}
+
+type Tag {
+  _count: TagCount!
+  id: ID!
+  name: String!
+  posts: [Post!]
+}
+
+type TagCount {
+  posts: Int!
+}
