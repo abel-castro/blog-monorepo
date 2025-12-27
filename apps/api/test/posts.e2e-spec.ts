@@ -5,10 +5,13 @@ import request from "supertest";
 import { App } from "supertest/types";
 import { AppModule } from "../src/app.module";
 import { PrismaService, queryCounter } from "../src/prisma.service";
+import { setupTestDatabase } from "./setup-test-db";
+import type { PrismaClient } from "@prisma/client";
 
 describe("Posts Query Performance (e2e)", () => {
   let app: INestApplication<App>;
-  let prisma: PrismaService;
+  let db: Awaited<ReturnType<typeof setupTestDatabase>>;
+  let prisma: PrismaClient;
 
   const postsQuery = `
     query {
@@ -30,31 +33,40 @@ describe("Posts Query Performance (e2e)", () => {
     }
   `;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     // Enable query counting via environment variable
     process.env.PRISMA_COUNT_QUERIES = "1";
 
+    // Set up isolated test database
+    db = await setupTestDatabase();
+    prisma = db.prisma;
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(PrismaService)
+      .useValue(prisma)
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
-
-    prisma = app.get<PrismaService>(PrismaService);
-
-    // Clean up database before each test
-    await prisma.post.deleteMany();
-    await prisma.author.deleteMany();
-    await prisma.tag.deleteMany();
-
-    // Reset counter after cleanup
-    queryCounter.reset();
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     queryCounter.stop();
     await app.close();
+    await db.cleanup();
+  });
+
+  beforeEach(async () => {
+    // Clean database before each test
+    // Order matters: posts first (to remove foreign keys), then tags and authors
+    await prisma.post.deleteMany();
+    await prisma.tag.deleteMany();
+    await prisma.author.deleteMany();
+
+    // Reset counter before each test
+    queryCounter.reset();
   });
 
   it("should maintain constant query count when fetching posts list", async () => {
