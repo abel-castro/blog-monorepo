@@ -33,6 +33,19 @@ describe("Posts Query Performance (e2e)", () => {
     }
   `;
 
+  type PostsQueryResponse = {
+    data: {
+      posts: Array<{
+        id: string;
+        title: string;
+        content: string;
+        published: boolean;
+        author: { id: string; name: string; email: string };
+        tags: Array<{ id: string; name: string }>;
+      }>;
+    };
+  };
+
   beforeAll(async () => {
     // Enable query counting via environment variable
     process.env.PRISMA_COUNT_QUERIES = "1";
@@ -108,9 +121,11 @@ describe("Posts Query Performance (e2e)", () => {
       .send({ query: postsQuery })
       .expect(200);
 
-    expect(response1.body.data.posts).toHaveLength(1);
-    expect(response1.body.data.posts[0].author).toBeDefined();
-    expect(response1.body.data.posts[0].tags).toHaveLength(2);
+    const postsResponse1 = response1.body as unknown as PostsQueryResponse;
+
+    expect(postsResponse1.data.posts).toHaveLength(1);
+    expect(postsResponse1.data.posts[0].author).toBeDefined();
+    expect(postsResponse1.data.posts[0].tags).toHaveLength(2);
 
     const firstQueryCount = queryCounter.count;
     console.log(`Query count with 1 post: ${firstQueryCount}`);
@@ -137,9 +152,11 @@ describe("Posts Query Performance (e2e)", () => {
       .send({ query: postsQuery })
       .expect(200);
 
-    expect(response2.body.data.posts).toHaveLength(2);
-    expect(response2.body.data.posts[0].author).toBeDefined();
-    expect(response2.body.data.posts[1].author).toBeDefined();
+    const postsResponse2 = response2.body as unknown as PostsQueryResponse;
+
+    expect(postsResponse2.data.posts).toHaveLength(2);
+    expect(postsResponse2.data.posts[0].author).toBeDefined();
+    expect(postsResponse2.data.posts[1].author).toBeDefined();
 
     const secondQueryCount = queryCounter.count;
     console.log(`Query count with 2 posts: ${secondQueryCount}`);
